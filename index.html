@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data Mining — Course Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #09090b;
+  --bg2: #111114;
+  --bg3: #18181c;
+  --bg4: #1f1f24;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #f0eeea;
+  --text2: #9896a0;
+  --text3: #5a5865;
+  --green: #22d3a5;
+  --green-dim: rgba(34,211,165,0.1);
+  --green-glow: rgba(34,211,165,0.25);
+  --amber: #f5a623;
+  --purple: #a78bfa;
+  --blue: #60a5fa;
+  --coral: #fb7185;
+  --teal: #2dd4bf;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient background */
+.bg-mesh {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 45% at 8% 8%, rgba(34,211,165,0.055) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 45% at 92% 92%, rgba(167,139,250,0.045) 0%, transparent 60%),
+    radial-gradient(ellipse 35% 35% at 50% 55%, rgba(96,165,250,0.025) 0%, transparent 70%);
+}
+.grain {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px;
+}
+
+.wrapper {
+  position: relative; z-index: 2;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 28px 100px;
+}
+
+/* ── HEADER ── */
+header {
+  padding: 56px 0 44px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+  animation: fadeUp 0.65s ease both;
+}
+
+.eyebrow {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--green);
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.eyebrow::before {
+  content: ''; display: inline-block;
+  width: 22px; height: 1px; background: var(--green);
+}
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+}
+h1 em { color: var(--green); font-style: normal; }
+.hero-sub {
+  font-size: 14px; color: var(--text2);
+  margin-top: 14px; font-weight: 300;
+  line-height: 1.65; max-width: 360px;
+}
+
+.stats-row {
+  display: flex; gap: 2px; flex-shrink: 0; align-self: flex-end;
+}
+.stat {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 14px 22px; text-align: center;
+  min-width: 82px;
+}
+.stat:first-child { border-radius: 12px 0 0 12px; }
+.stat:last-child  { border-radius: 0 12px 12px 0; }
+.stat-n {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px; font-weight: 700;
+  line-height: 1; color: var(--text);
+}
+.stat-n.accent { color: var(--green); }
+.stat-l {
+  font-size: 10px; font-weight: 500;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-top: 5px;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-section {
+  margin-bottom: 32px;
+  animation: fadeUp 0.65s 0.08s ease both;
+}
+.prog-row {
+  display: flex; align-items: center; gap: 16px;
+}
+.prog-key {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text3); min-width: 86px;
+}
+.prog-track {
+  flex: 1; height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), #06d6a0);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 10px rgba(34,211,165,0.3);
+}
+.prog-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700;
+  color: var(--green); min-width: 36px; text-align: right;
+}
+
+/* ── SEARCH ── */
+.search-wrap {
+  position: relative; margin-bottom: 24px;
+  animation: fadeUp 0.65s 0.12s ease both;
+}
+.search-icon {
+  position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+  width: 15px; height: 15px; color: var(--text3); pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px 12px 42px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-input::placeholder { color: var(--text3); }
+.search-input:focus {
+  border-color: rgba(34,211,165,0.4);
+  box-shadow: 0 0 0 3px rgba(34,211,165,0.06);
+}
+
+/* ── TABS ── */
+.tabs-wrap {
+  margin-bottom: 36px;
+  animation: fadeUp 0.65s 0.15s ease both;
+}
+.tabs { display: flex; gap: 5px; flex-wrap: wrap; }
+.tab {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  padding: 7px 16px; border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  letter-spacing: 0.01em;
+}
+.tab:hover { border-color: var(--border2); color: var(--text); background: var(--bg3); }
+.tab.active {
+  background: var(--green); border-color: var(--green);
+  color: #072018; font-weight: 600;
+}
+
+/* ── MODULE ── */
+.module-block { margin-bottom: 52px; animation: fadeUp 0.55s ease both; }
+.module-head {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+}
+.m-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.m-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text3);
+}
+.m-line { flex: 1; height: 1px; background: var(--border); }
+.m-cnt { font-size: 11px; color: var(--text3); }
+
+/* ── CARDS GRID ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.22s, transform 0.18s, background 0.22s;
+  position: relative;
+}
+.card-shine {
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.card:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-2px); }
+.card:hover .card-shine { opacity: 1; }
+.card.done {
+  border-color: rgba(34,211,165,0.28);
+  background: rgba(34,211,165,0.025);
+}
+.card.done .card-shine {
+  background: linear-gradient(90deg, transparent, rgba(34,211,165,0.18), transparent);
+  opacity: 1;
+}
+
+.card-top { padding: 17px 18px; display: flex; align-items: flex-start; gap: 12px; }
+
+.card-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  color: var(--text3); padding-top: 3px; min-width: 20px;
+}
+.card-info { flex: 1; min-width: 0; }
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13.5px; font-weight: 700;
+  color: var(--text); line-height: 1.3; margin-bottom: 6px;
+}
+.card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.pill {
+  font-size: 10px; font-weight: 500;
+  padding: 2px 8px; border-radius: 100px;
+  letter-spacing: 0.02em;
+}
+
+.check-btn {
+  width: 23px; height: 23px; border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; cursor: pointer; background: transparent;
+}
+.check-btn:hover { border-color: var(--green); background: var(--green-dim); }
+.check-btn .chk-svg { display: none; }
+.card.done .check-btn {
+  background: var(--green); border-color: var(--green);
+}
+.card.done .check-btn .chk-svg { display: block; }
+
+/* Expandable */
+.card-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1);
+}
+.card.open .card-body { max-height: 360px; }
+
+.body-inner {
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--border);
+}
+.body-desc {
+  font-size: 13px; color: var(--text2);
+  line-height: 1.72; font-weight: 300; margin-bottom: 14px;
+}
+.body-desc strong { color: var(--text); font-weight: 500; }
+.body-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.ask-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: 8px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--text2); font-size: 12px; font-weight: 500;
+  text-decoration: none; font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s; cursor: pointer;
+}
+.ask-btn:hover {
+  background: var(--green-dim); border-color: rgba(34,211,165,0.4); color: var(--green);
+}
+.ask-btn svg { width: 11px; height: 11px; }
+
+.diff {
+  display: flex; align-items: center; gap: 4px;
+}
+.diff-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 70px 20px; color: var(--text3); font-size: 14px; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 620px) {
+  .wrapper { padding: 0 16px 60px; }
+  header { flex-direction: column; align-items: flex-start; padding: 36px 0 32px; }
+  .stats-row { width: 100%; }
+  .stat { flex: 1; }
+  .cards-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div class="grain"></div>
+
+<div class="wrapper">
+
+  <header>
+    <div>
+      <div class="eyebrow">CS undergraduate · Data Mining</div>
+      <h1>Course<br/><em>Companion</em></h1>
+      <p class="hero-sub">20 topics across 5 modules. Track your progress, explore concepts, and ask Claude anything.</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-n accent" id="stat-done">0</div>
+        <div class="stat-l">Done</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">20</div>
+        <div class="stat-l">Topics</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">5</div>
+        <div class="stat-l">Modules</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="progress-section">
+    <div class="prog-row">
+      <span class="prog-key">Progress</span>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      <span class="prog-val" id="prog-val">0%</span>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input class="search-input" id="search" type="text" placeholder="Search topics, algorithms, concepts…" oninput="onSearch(this.value)"/>
+  </div>
+
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab active" onclick="onCat('all',this)">All topics</button>
+      <button class="tab" onclick="onCat('foundations',this)">Foundations</button>
+      <button class="tab" onclick="onCat('preprocessing',this)">Preprocessing</button>
+      <button class="tab" onclick="onCat('classification',this)">Classification</button>
+      <button class="tab" onclick="onCat('clustering',this)">Clustering</button>
+      <button class="tab" onclick="onCat('advanced',this)">Advanced</button>
+    </div>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script>
+const TOPICS = [
+  {id:1,n:'01',cat:'foundations',title:'Introduction to Data Mining',
+   tags:[{l:'Core',c:'green'}],d:1,
+   desc:'The <strong>KDD process</strong>: selection → preprocessing → transformation → mining → interpretation. Types of knowledge: association rules, classification, clustering, anomaly detection. Motivation and real-world impact.',
+   q:'Explain the KDD process and the main types of patterns data mining discovers — with real examples'},
+  {id:2,n:'02',cat:'foundations',title:'Data Types & Attributes',
+   tags:[{l:'Core',c:'green'}],d:1,
+   desc:'<strong>Nominal, ordinal, interval, ratio</strong> scales and their measurement properties. Discrete vs continuous. Document, transaction, graph, and time-series data. Why attribute type determines algorithm choice.',
+   q:'Explain the 4 attribute measurement scales with concrete examples and their impact on data mining'},
+  {id:3,n:'03',cat:'foundations',title:'Data Exploration & Statistics',
+   tags:[{l:'EDA',c:'amber'}],d:1,
+   desc:'Central tendency: mean, median, mode. Dispersion: variance, std deviation, IQR. Shape: <strong>skewness and kurtosis</strong>. Visualizations: histograms, boxplots, scatter matrices, Q-Q plots, correlation heatmaps.',
+   q:'Walk me through exploratory data analysis in data mining — statistics to compute and visualizations to create'},
+  {id:4,n:'04',cat:'preprocessing',title:'Data Cleaning',
+   tags:[{l:'Essential',c:'coral'}],d:2,
+   desc:'<strong>Missing values</strong>: listwise deletion, mean/median/mode imputation, regression imputation, MICE. Noise handling via binning and regression. Outlier detection (z-score, IQR) and treatment strategies.',
+   q:'Best strategies for handling missing values and outliers — when to delete vs impute vs keep them?'},
+  {id:5,n:'05',cat:'preprocessing',title:'Transformation & Integration',
+   tags:[{l:'Essential',c:'coral'}],d:2,
+   desc:'<strong>Normalization</strong>: min-max, z-score, decimal scaling. Discretization: equal-width, equal-frequency, entropy-based. Feature construction and aggregation. Data cube and OLAP operations for multidimensional analysis.',
+   q:'Explain normalization vs standardization — how they differ mathematically and how each affects ML algorithms'},
+  {id:6,n:'06',cat:'preprocessing',title:'Dimensionality Reduction',
+   tags:[{l:'Essential',c:'coral'},{l:'Math',c:'purple'}],d:3,
+   desc:'The <strong>curse of dimensionality</strong> and why high dimensions hurt. Feature selection: filter (chi-squared), wrapper (RFE), embedded (Lasso, Ridge). PCA step-by-step: covariance → eigenvectors → projection. LDA for supervised cases.',
+   q:'Explain PCA from scratch — covariance matrix, eigenvectors, explained variance ratio, and how to pick components'},
+  {id:7,n:'07',cat:'classification',title:'Decision Trees',
+   tags:[{l:'Algorithm',c:'blue'}],d:2,
+   desc:'<strong>Information gain and entropy</strong> (ID3). Gain ratio to correct high-cardinality bias (C4.5). Gini impurity (CART). Pruning: pre-pruning (min-samples, max-depth) vs post-pruning (reduced-error, cost-complexity α).',
+   q:'How does information gain work in decision trees? Explain entropy, Gini impurity, overfitting, and pruning'},
+  {id:8,n:'08',cat:'classification',title:'Naive Bayes & kNN',
+   tags:[{l:'Algorithm',c:'blue'}],d:2,
+   desc:'<strong>Bayes theorem</strong>: prior × likelihood → posterior. Conditional independence assumption. Laplace smoothing for zero-frequency problem. kNN: distance metrics, the role of k, weighted voting, curse of dimensionality.',
+   q:'Compare Naive Bayes and kNN — how each works, complexity, assumptions, and when to use each'},
+  {id:9,n:'09',cat:'classification',title:'Support Vector Machines',
+   tags:[{l:'Algorithm',c:'blue'},{l:'Math',c:'purple'}],d:3,
+   desc:'<strong>Maximum margin hyperplane</strong> and why margins matter. Support vectors. Soft-margin with C trade-off. The <strong>kernel trick</strong>: polynomial, RBF, sigmoid. VC dimension. Multi-class: One-vs-One and One-vs-Rest.',
+   q:'Explain SVMs intuitively — what is the margin, what are support vectors, and how does the kernel trick work?'},
+  {id:10,n:'10',cat:'classification',title:'Ensemble Methods',
+   tags:[{l:'Algorithm',c:'blue'},{l:'Advanced',c:'amber'}],d:3,
+   desc:'<strong>Bagging</strong>: bootstrap sampling, Random Forests, out-of-bag evaluation. <strong>Boosting</strong>: AdaBoost weight updates, Gradient Boosting loss minimization, XGBoost with regularization and pruning. Stacking with meta-learner.',
+   q:'Explain bagging vs boosting with examples. How does gradient boosting differ from random forests?'},
+  {id:11,n:'11',cat:'classification',title:'Neural Networks',
+   tags:[{l:'Algorithm',c:'blue'},{l:'Deep Learning',c:'teal'}],d:3,
+   desc:'Perceptron → multi-layer. <strong>Backpropagation</strong> via chain rule. Activation functions: sigmoid, ReLU, tanh, GELU. Overfitting: dropout, L1/L2, batch normalization. Brief intro to CNNs and RNNs for DM tasks.',
+   q:'Explain backpropagation from scratch — how are gradients computed and weights updated during training?'},
+  {id:12,n:'12',cat:'classification',title:'Model Evaluation',
+   tags:[{l:'Evaluation',c:'amber'}],d:2,
+   desc:'Confusion matrix: <strong>accuracy, precision, recall, F1-score</strong>. Macro vs micro vs weighted averaging. ROC curve and AUC interpretation. Precision-recall curves for imbalanced data. k-fold CV. Bias-variance tradeoff.',
+   q:'Explain precision, recall, F1, and ROC-AUC — when to prioritize each metric and how to handle class imbalance'},
+  {id:13,n:'13',cat:'clustering',title:'k-Means Clustering',
+   tags:[{l:'Unsupervised',c:'teal'}],d:2,
+   desc:"<strong>Lloyd's algorithm</strong>: initialize centroids → assign points → recompute centroids → repeat. k-means++ smart initialization to avoid bad local optima. Choosing k: elbow method, silhouette score. Limitations: non-convex clusters.",
+   q:'Walk me through k-means step by step. How does k-means++ help, and how do I choose the right k?'},
+  {id:14,n:'14',cat:'clustering',title:'Hierarchical Clustering',
+   tags:[{l:'Unsupervised',c:'teal'}],d:2,
+   desc:'<strong>Agglomerative (bottom-up)</strong> and divisive (top-down) approaches. Linkage: single (chaining prone), complete (compact), average, Ward (minimum variance increase). Dendrogram reading, cophenetic correlation, cutting strategies.',
+   q:'Explain hierarchical clustering — differences between single, complete, and Ward linkage, and how to read a dendrogram'},
+  {id:15,n:'15',cat:'clustering',title:'DBSCAN & Density Methods',
+   tags:[{l:'Unsupervised',c:'teal'},{l:'Robust',c:'coral'}],d:3,
+   desc:'<strong>Core, border, noise</strong> points defined by ε-neighborhood and MinPts. Density-reachability and density-connectivity. Finds arbitrary-shaped clusters, naturally handles noise. OPTICS for varying density. Choosing ε with k-distance graph.',
+   q:'Explain DBSCAN — what are core, border, and noise points? How does it compare to k-means and how do I set parameters?'},
+  {id:16,n:'16',cat:'advanced',title:'Association Rule Mining',
+   tags:[{l:'Pattern Mining',c:'purple'}],d:2,
+   desc:'Market basket analysis motivation. <strong>Support, confidence, lift</strong> measures and how to interpret them. Apriori: anti-monotone downward closure, candidate generation and pruning. FP-Growth: compact FP-tree without candidate generation.',
+   q:'Explain support, confidence, and lift. Walk through Apriori vs FP-Growth — which is faster and why?'},
+  {id:17,n:'17',cat:'advanced',title:'Sequential Pattern Mining',
+   tags:[{l:'Pattern Mining',c:'purple'}],d:3,
+   desc:'Time-ordered sequence databases. <strong>GSP</strong>: Apriori-like candidate generation for sequences. <strong>PrefixSpan</strong>: projected database approach without candidate generation. Time gaps and sliding window constraints. Applications: web sessions, DNA.',
+   q:'What is sequential pattern mining? How does PrefixSpan work? Give me a concrete example with transactions'},
+  {id:18,n:'18',cat:'advanced',title:'Anomaly Detection',
+   tags:[{l:'Advanced',c:'coral'}],d:3,
+   desc:'Statistical: z-score, IQR, Grubbs test. Distance-based: kNN outlier score. <strong>LOF</strong>: local reachability density and local outlier factor. <strong>Isolation Forest</strong>: random partitioning and path length. Applications: fraud, intrusion, quality control.',
+   q:'Compare anomaly detection methods — statistical, LOF, and Isolation Forest. When to use each and how do they differ?'},
+  {id:19,n:'19',cat:'advanced',title:'Web & Text Mining',
+   tags:[{l:'Applications',c:'amber'}],d:2,
+   desc:'Web content/structure/usage mining. <strong>TF-IDF</strong> and vector space model. Topic modeling with <strong>LDA</strong>: Dirichlet priors, Gibbs sampling. Word2Vec skip-gram and CBOW. GloVe. Sentiment analysis pipeline and feature engineering.',
+   q:'Explain TF-IDF and LDA topic modeling. How do Word2Vec embeddings capture semantic meaning?'},
+  {id:20,n:'20',cat:'advanced',title:'Ethics & Privacy in DM',
+   tags:[{l:'Ethics',c:'amber'}],d:2,
+   desc:'Sources of <strong>algorithmic bias</strong> and mitigation. Privacy-preserving DM: <strong>k-anonymity</strong>, l-diversity, t-closeness, <strong>differential privacy</strong> (ε-DP, Laplace mechanism). GDPR rights. Fairness metrics: demographic parity, equalized odds.',
+   q:'Explain k-anonymity and differential privacy. What are the main sources of bias in data mining and how to mitigate them?'}
+];
+
+const CATS = {
+  foundations:    {label:'Foundations',    color:'#22d3a5'},
+  preprocessing:  {label:'Preprocessing',  color:'#fb7185'},
+  classification: {label:'Classification', color:'#60a5fa'},
+  clustering:     {label:'Clustering',     color:'#2dd4bf'},
+  advanced:       {label:'Advanced',       color:'#a78bfa'}
+};
+const PILLS = {
+  green:  {bg:'rgba(34,211,165,0.12)', text:'#22d3a5'},
+  amber:  {bg:'rgba(245,166,35,0.12)', text:'#f5a623'},
+  purple: {bg:'rgba(167,139,250,0.12)',text:'#a78bfa'},
+  blue:   {bg:'rgba(96,165,250,0.12)', text:'#60a5fa'},
+  coral:  {bg:'rgba(251,113,133,0.12)',text:'#fb7185'},
+  teal:   {bg:'rgba(45,212,191,0.12)', text:'#2dd4bf'}
+};
+const DIFF_COLORS = ['#22d3a5','#f5a623','#fb7185'];
+
+const done = new Set();
+let cat = 'all', query = '', openId = null;
+
+function visible() {
+  return TOPICS.filter(t => {
+    const catOk = cat === 'all' || t.cat === cat;
+    const q = query.toLowerCase();
+    const searchOk = !q || t.title.toLowerCase().includes(q)
+      || t.desc.replace(/<[^>]+>/g,'').toLowerCase().includes(q)
+      || t.tags.some(tg => tg.l.toLowerCase().includes(q));
+    return catOk && searchOk;
+  });
+}
+
+function pill(t) {
+  const c = PILLS[t.c] || PILLS.green;
+  return `<span class="pill" style="background:${c.bg};color:${c.text}">${t.l}</span>`;
+}
+
+function diffWidget(d) {
+  const c = DIFF_COLORS[d-1];
+  return `<div class="diff">${[1,2,3].map(i =>
+    `<div class="diff-dot" style="background:${i<=d?c:'var(--bg4)'}"></div>`
+  ).join('')}</div>`;
+}
+
+function cardHTML(t) {
+  const isDone = done.has(t.id);
+  const isOpen = openId === t.id;
+  return `<div class="card${isDone?' done':''}${isOpen?' open':''}" id="card-${t.id}">
+    <div class="card-shine"></div>
+    <div class="card-top" onclick="toggleOpen(${t.id})">
+      <span class="card-num">${t.n}</span>
+      <div class="card-info">
+        <div class="card-title">${t.title}</div>
+        <div class="card-tags">${t.tags.map(pill).join('')}</div>
+      </div>
+      <button class="check-btn" onclick="event.stopPropagation();toggleDone(${t.id})" title="Mark as studied">
+        <svg class="chk-svg" width="10" height="8" viewBox="0 0 10 8" fill="none" stroke="#072018" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1,4 3.5,6.5 9,1"/>
+        </svg>
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="body-inner">
+        <p class="body-desc">${t.desc}</p>
+        <div class="body-foot">
+          <a class="ask-btn" href="https://claude.ai/new?q=${encodeURIComponent(t.q)}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Ask Claude
+          </a>
+          ${diffWidget(t.d)}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render() {
+  const vis = visible();
+  const el = document.getElementById('content');
+  if (!vis.length) { el.innerHTML = '<div class="empty">No topics match your search.</div>'; return; }
+
+  if (cat !== 'all' || query) {
+    el.innerHTML = `<div class="module-block"><div class="cards-grid">${vis.map(cardHTML).join('')}</div></div>`;
+  } else {
+    const order = ['foundations','preprocessing','classification','clustering','advanced'];
+    const grouped = {};
+    vis.forEach(t => { (grouped[t.cat] = grouped[t.cat]||[]).push(t); });
+    el.innerHTML = order.filter(c => grouped[c]).map((c, i) => {
+      const m = CATS[c];
+      return `<div class="module-block" style="animation-delay:${i*0.06}s">
+        <div class="module-head">
+          <div class="m-dot" style="background:${m.color}"></div>
+          <span class="m-name">${m.label}</span>
+          <div class="m-line"></div>
+          <span class="m-cnt">${grouped[c].length} topics</span>
+        </div>
+        <div class="cards-grid">${grouped[c].map(cardHTML).join('')}</div>
+      </div>`;
+    }).join('');
+  }
+  updateProg();
+}
+
+function toggleOpen(id) {
+  openId = openId === id ? null : id;
+  render();
+}
+
+function toggleDone(id) {
+  done.has(id) ? done.delete(id) : done.add(id);
+  const card = document.getElementById('card-'+id);
+  if (card) card.classList.toggle('done', done.has(id));
+  updateProg();
+}
+
+function updateProg() {
+  const pct = Math.round(done.size / TOPICS.length * 100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-val').textContent = pct+'%';
+  document.getElementById('stat-done').textContent = done.size;
+}
+
+function onCat(c, btn) {
+  cat = c; openId = null;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function onSearch(v) { query = v; openId = null; render(); }
+
+render();
+</script>
+</body>
+</html>
